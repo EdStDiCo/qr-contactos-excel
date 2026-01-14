@@ -1,0 +1,13 @@
+# Entorno virtual
+venv/
+
+# Archivos y archivos generados
+qrs/
+*.xlsx
+
+# Cache
+__pycache__/
+*.pyc
+
+# Excel temporales
+~$*.xlsx
