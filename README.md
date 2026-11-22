@@ -1,5 +1,7 @@
 # Generador de códigos QR desde Excel
 
+![tests](https://github.com/EdStDiCo/qr-contactos-excel/actions/workflows/tests.yml/badge.svg)
+
 Convierte una lista de contactos en Excel en códigos QR con formato **vCard 3.0**, listos para escanear con la cámara del celular. El resultado se guarda en una hoja nueva del mismo libro y también como imágenes PNG individuales.
 
 ![Ejemplo de tarjeta generada](docs/ejemplo-tarjeta.png)
