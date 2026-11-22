@@ -1,103 +1,159 @@
-# Generador de Códigos QR desde Excel
+# Generador de códigos QR desde Excel
 
-Proyecto en Python que permite:
-- Leer contactos desde un archivo Excel (debe existir un archivo inicial llamado contactos.xlsx, debes crearlo tu mismo)
-- Generar códigos QR en formato vCard
-- Insertarlos en una nueva hoja del mismo Excel
-- Visualización vertical para fácil navegación (se terminara generando un nuevo archivo con el resultado)
+Convierte una lista de contactos en Excel en códigos QR con formato **vCard 3.0**, listos para escanear con la cámara del celular. El resultado se guarda en una hoja nueva del mismo libro y también como imágenes PNG individuales.
 
-## 📋 Requisitos
+![Ejemplo de tarjeta generada](docs/ejemplo-tarjeta.png)
+
+## Qué hace
+
+- Lee los contactos de la hoja `Contactos`.
+- Valida que existan las columnas obligatorias.
+- Genera un código QR con los datos del contacto en formato vCard.
+- Inserta los QR en una hoja nueva llamada `QR_Contactos`.
+- Guarda cada QR como PNG en la carpeta `qrs/`.
+- Muestra un resumen al terminar y errores claros si falta algo.
+
+## Requisitos
 
 - Python 3.9 o superior
 - pandas
-- qrcode
 - openpyxl
-- pillow
+- Pillow
+- qrcode
 
-## 📦 Instalación
+## Instalación
 
-1. Clonar el repositorio:
+### Windows
+
 ```bash
-git clone https://github.com/tu_usuario/qr-contactos-excel.git
-```
-2. entrar al proyecto
-```bash
-cd qr-contactos-excel
-```
-3. Crear entorno virtual:
-```bash
-python -m venv venv
+py -3 -m venv .venv
+.venv\Scripts\activate
+py -3 -m pip install -r requirements.txt
 ```
 
-4. Activar entorno virtual:
+### macOS / Linux
+
 ```bash
-venv\Scripts\activate
-```
-5. Instalar dependencias:
-```bash
-pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-## 📁 Estructura del proyecto
+## Formato del Excel
+
+El archivo debe llamarse `contactos.xlsx` y tener una hoja llamada exactamente **`Contactos`**.
+
+La primera fila debe contener estos encabezados, escritos exactamente así:
+
+| Columna | Tipo recomendado | Descripción |
+|---|---|---|
+| `nombre` | Texto | Nombre del contacto |
+| `apellido` | Texto | Apellido del contacto |
+| `telefono` | Texto | Número de celular, con indicativo si aplica |
+| `email` | Texto | Correo electrónico |
+
+Ejemplo:
+
+| nombre | apellido | telefono | email |
+|---|---|---|---|
+| Ana | Gómez | 3001234567 | ana@example.com |
+| Carlos | Pérez | +57 3109876543 | carlos@example.com |
+
+> Importante: la columna `telefono` debe estar en formato **Texto** para no perder ceros iniciales ni el signo `+`.
+
+Puedes usar `ejemplos/contactos-ejemplo.xlsx` como plantilla. Contiene solo datos ficticios.
+
+## Uso
+
+1. Copia el archivo de ejemplo a la raíz del proyecto:
+
+   ```bash
+   cp ejemplos/contactos-ejemplo.xlsx contactos.xlsx
+   ```
+
+2. Ejecuta:
+
+   ```bash
+   py -3 main.py
+   ```
+
+3. Abre `contactos_con_qr.xlsx` y revisa la hoja `QR_Contactos`.
+
+También puedes indicar otras rutas:
+
+```bash
+py -3 main.py --input ruta/contactos.xlsx --output ruta/resultado.xlsx --qr-dir ruta/qrs
 ```
+
+Opciones disponibles:
+
+| Opción | Valor por defecto | Descripción |
+|---|---|---|
+| `-i`, `--input` | `contactos.xlsx` | Excel de entrada |
+| `-o`, `--output` | `contactos_con_qr.xlsx` | Excel de salida |
+| `--qr-dir` | `qrs` | Carpeta de los PNG |
+
+## Salida
+
+```text
+contactos_con_qr.xlsx   # Excel original + hoja QR_Contactos
+qrs/
+├── Ana_Gómez.png
+└── Carlos_Pérez.png
+```
+
+Si el libro ya tiene una hoja `QR_Contactos`, se reemplaza. Los nombres de archivo se limpian y se numeran si hay duplicados.
+
+## Estructura del proyecto
+
+```text
 qr-contactos-excel/
 ├── main.py
-├── contactos.xlsx (este archivo no va estar inicialmente, debes crearlo y poner tu constactos)
+├── requirements.txt
 ├── README.md
+├── LICENSE
 ├── .gitignore
-└── venv/
-```
-## 📊 Estructura obligatoria del archivo Excel
-El script **espera un archivo Excel** llamado `contactos.xlsx` con una hoja llamada: `Contactos`
-
-### 🔑 Reglas importantes
-
-- La **primera fila** debe contener los encabezados
-- Los nombres de las columnas deben escribirse **exactamente así**
-- No deben existir filas vacías entre contactos
-- La columna `telefono` debe estar en formato **Texto** (no número)
-
----
-
-### 📋 Columnas requeridas
-
-| Columna   | Tipo recomendado | Descripción |
-|----------|------------------|-------------|
-| nombre   | Texto            | Nombre del contacto |
-| apellido | Texto            | Apellido del contacto |
-| telefono | Texto            | Número de celular (incluya indicativo si aplica) |
-| email    | Texto            | Correo electrónico |
-
-📌 Ejemplo válido:
-
-| nombre | apellido | telefono   | email |
-|------|---------|------------|-------|
-| Juan | Pérez   | 3001234567 | juan@email.com |
-| Ana  | Gómez   | 3109876543 | ana@email.com |
-
----
-
-### ⚠️ Errores comunes
-
-❌ Cambiar nombres de columnas (`Nombre`, `tel`, etc.)  
-❌ Teléfono como número (pierde ceros o formato)  
-❌ Hoja con nombre distinto a `Contactos`
-
----
-
-### 🧠 Personalización
-
-Si deseas usar otros nombres de columnas o agregar campos como `empresa`,
-debes modificar la función:
-
-```python
-fila_a_vcard(fila)
+├── ejemplos/
+│   └── contactos-ejemplo.xlsx
+├── docs/
+│   └── ejemplo-tarjeta.png
+└── tests/
+    └── test_main.py
 ```
 
-## ▶️ Uso
-Coloca el archivo contactos.xlsx en la raíz del proyecto y ejecuta:
+## Pruebas
+
+El proyecto usa `unittest`, incluido en Python:
+
 ```bash
-python main.py
+py -3 -m unittest discover -s tests -v
 ```
-Se generará un archivo: `contactos_con_qr.xlsx` abre el archivo y podras ver tus codigos QR generados
 
+Las pruebas cubren:
+
+- Generación del vCard y escape de caracteres especiales.
+- Nombres de archivo seguros y duplicados.
+- Validación de columnas faltantes.
+- Flujo completo con un Excel temporal.
+
+## Manejo de errores
+
+- Si falta `contactos.xlsx`, se muestra un mensaje claro.
+- Si falta la hoja `Contactos` o alguna columna, se indica cuál falta.
+- Si el Excel de salida está abierto, se pide cerrarlo antes de reintentar.
+- Si no hay contactos, no se genera un archivo vacío.
+
+## Privacidad
+
+No subas contactos reales al repositorio. El `.gitignore` excluye los `.xlsx`, excepto el archivo de ejemplo con datos ficticios. Los QR generados en `qrs/` también se excluyen.
+
+## Limitaciones
+
+- Trabaja con archivos `.xlsx`; no conserva macros de `.xlsm`.
+- No valida formato de teléfono ni de correo.
+- No incluye fotos de contacto en el vCard.
+- La lectura de la hoja usa pandas; si el Excel tiene fórmulas complejas, conviene revisar el resultado.
+
+## Licencia
+
+MIT. Consulta [LICENSE](LICENSE).

@@ -1,13 +1,19 @@
-# Entorno virtual
+# Entornos virtuales
 venv/
+.venv/
 
-# Archivos y archivos generados
+# Archivos y carpetas generadas
 qrs/
 *.xlsx
+
+# Excepción: datos de ejemplo con contactos ficticios
+!ejemplos/contactos-ejemplo.xlsx
 
 # Cache
 __pycache__/
 *.pyc
+.pytest_cache/
+.coverage
 
 # Excel temporales
 ~$*.xlsx
